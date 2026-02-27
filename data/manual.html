@@ -25,6 +25,11 @@
         <section class="control-box">
             <h2>Manual Override</h2>
             <p>Use buttons or keyboard arrows to move.</p>
+            
+            <div class = "speed-control">
+                <label for="speed-slider">Speed: <span id="speed-display">120</span></label>
+                <input type="range" id="speed-slider" min="60" max="255" value="120">
+            </div>
 
             <div class="d-pad-container">
                 <button class="d-btn" id="btn-up" data-cmd="FORWARD">▲</button>

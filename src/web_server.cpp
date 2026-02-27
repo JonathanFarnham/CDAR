@@ -56,14 +56,18 @@ void handleMove()
         return;
     }
 
+    //Get Manual Control Commands
     const char* cmd = doc["direction"];
+    int speedVal = doc["speed"] | 120;
     Serial.print("Executing a Command: ");
     Serial.print(cmd);
+    Serial.print(" at Speed: ");
+    Serial.println(speedVal);
 
-    if (strcmp(cmd, "FORWARD") == 0) turnRight();
-    else if (strcmp(cmd, "BACKWARD") == 0) turnLeft();
-    else if (strcmp(cmd, "LEFT") == 0) moveBackward();
-    else if (strcmp(cmd, "RIGHT") == 0) moveForward();
+    if (strcmp(cmd, "FORWARD") == 0) moveForward(speedVal);
+    else if (strcmp(cmd, "BACKWARD") == 0) moveBackward(speedVal);
+    else if (strcmp(cmd, "LEFT") == 0) turnLeft(speedVal);
+    else if (strcmp(cmd, "RIGHT") == 0) turnRight(speedVal);
     else if (strcmp(cmd, "STOP") == 0) stopBot();
     else {
         server.send(400, "application/json", "{\"error\":\"Unknown Command\"}");

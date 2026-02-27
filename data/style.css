@@ -418,6 +418,31 @@ input.error-shake {
     border-color: var(--danger);
 }
 
+/*Speed Slider Style*/
+.speed-control
+{
+    margin: 1.5rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 250px;
+}
+
+.speed-control label
+{
+    font-weight: 600;
+    color: var(--text);
+    font-size: 1.1rem;
+}
+
+.speed-control input[type="range"]
+{
+    width: 100%;
+    cursor: pointer;
+    accent-color: var(--primary);
+}
+
 /*Desktop Layout (801px and up)----------------------------------------------------------------*/
 @media (min-width: 801px) {
     .dashboard {

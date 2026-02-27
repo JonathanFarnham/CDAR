@@ -4,10 +4,10 @@ void initMotors();
 void stopBot();
 
 //Manual Control Functions
-void moveForward();
-void moveBackward();
-void turnLeft();
-void turnRight();
+void moveForward(int speed);
+void moveBackward(int speed);
+void turnLeft(int speed);
+void turnRight(int speed);
 
 //Grid Control Functions
 void driveStraight(int speed);

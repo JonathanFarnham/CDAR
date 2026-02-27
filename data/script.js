@@ -220,21 +220,29 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
     // LOGIC FOR MANUAL CONTROL PAGE------------------------------------------------------------------------
-    // ==========================================
-    // LOGIC FOR MANUAL CONTROL PAGE (Restored)
-    // ==========================================
     if (isManualPage) {
         const logDisplay = document.getElementById('command-log');
+        const speedSlider = document.getElementById('speed-slider');
+        const speedDisplay = document.getElementById('speed-display');
+
+        //update the ui when slider moves
+        if (speedSlider && speedDisplay)
+        {
+            speedSlider.addEventListener('input', (e) => {
+                speedDisplay.innerText = e.target.value;
+            });
+        }
         
         const sendCommand = (cmd) => {
             const timestamp = new Date().toLocaleTimeString();
+            const currentSpeed = speedSlider ? parseInt(speedSlider.value) : 120;
+
             if(logDisplay) logDisplay.innerText = `[${timestamp}] Sending: ${cmd}`;
-            
-            // SEND DATA TO ESP32
+            // SEND DATA TO ESP32 with speed value
             fetch('/api/robot/move', { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ direction: cmd }) 
+                body: JSON.stringify({ direction: cmd, speed: currentSpeed }) 
             })
             .then(response => {
                 if (!response.ok) throw new Error("Robot did not acknowledge");

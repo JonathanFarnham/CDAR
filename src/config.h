@@ -24,8 +24,10 @@
 #define SPEED_MOVE 80
 #define SPEED_TURN 140
 
-//****NEED TO FIX CURRENTLY TURNING CODE IS ACTUALLY MOVING STRAIGHT AND STRAIGHT CODE IS THE TURN*/
-//Implement a speed control slider to manual control mode so that we can test different speeds without reflashing
+
+//Motor Inversion Controls
+#define MOTOR_LEFT_INVERT false //change to true if left wheel drives backwards when asked to go forward
+#define MOTOR_RIGHT_INVERT false //change to true if the right wheel drives backwards when asked to go forward
 
 //Robot Physical Parameters (I NEED TO UPDATE THESE)
 #define TICKS_PER_FOOT 282

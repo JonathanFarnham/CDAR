@@ -68,8 +68,13 @@ long getEncoderAvg()
     return (left_ticks + right_ticks) / 2;
 }
 
-void setMotorHardware(int speed, int pinIn1, int pinIn2, int pinPWM)
+void setMotorHardware(int speed, int pinIn1, int pinIn2, int pinPWM, bool invert)
 {
+    //If the motor is physically inverted, flip the target speed
+    if (invert)
+    {
+        speed = -speed;
+    }
     if (speed > 0)
     {
         //Forward
@@ -96,7 +101,7 @@ void updateMotorSpeeds()
     if (millis() - lastRampTime >= RAMP_INTERVAL) {
         lastRampTime = millis();
 
-        // 1. Ramp Left Motor
+        //Ramp Left Motor
         if (currentSpeedL < targetSpeedL) {
             currentSpeedL += RAMP_STEP;
             if (currentSpeedL > targetSpeedL) currentSpeedL = targetSpeedL;
@@ -105,7 +110,7 @@ void updateMotorSpeeds()
             if (currentSpeedL < targetSpeedL) currentSpeedL = targetSpeedL;
         }
 
-        // 2. Ramp Right Motor
+        //Ramp Right Motor
         if (currentSpeedR < targetSpeedR) {
             currentSpeedR += RAMP_STEP;
             if (currentSpeedR > targetSpeedR) currentSpeedR = targetSpeedR;
@@ -114,9 +119,9 @@ void updateMotorSpeeds()
             if (currentSpeedR < targetSpeedR) currentSpeedR = targetSpeedR;
         }
 
-        // 3. Apply to Hardware
-        setMotorHardware((int)currentSpeedL, MOTOR_LEFT_IN1, MOTOR_LEFT_IN2, MOTOR_LEFT_EN);
-        setMotorHardware((int)currentSpeedR, MOTOR_RIGHT_IN1, MOTOR_RIGHT_IN2, MOTOR_RIGHT_EN);
+        //Apply to Hardware w/Inversion Flags
+        setMotorHardware((int)currentSpeedL, MOTOR_LEFT_IN1, MOTOR_LEFT_IN2, MOTOR_LEFT_EN, MOTOR_LEFT_INVERT);
+        setMotorHardware((int)currentSpeedR, MOTOR_RIGHT_IN1, MOTOR_RIGHT_IN2, MOTOR_RIGHT_EN, MOTOR_RIGHT_INVERT);
     }
 }
 
@@ -127,37 +132,37 @@ void stopBot()
     targetSpeedR = 0;
 }
 
-void moveForward() 
+void moveForward(int speed) 
 {
-    targetSpeedL = SPEED_MOVE;
-    targetSpeedR = SPEED_MOVE;
+    targetSpeedL = speed;
+    targetSpeedR = speed;
 }
 
-void moveBackward() 
+void moveBackward(int speed) 
 {
-    targetSpeedL = -SPEED_MOVE;
-    targetSpeedR = -SPEED_MOVE;
+    targetSpeedL = -speed;
+    targetSpeedR = -speed;
 }
 
-void turnLeft() 
+void turnLeft(int speed) 
 {
     // Left motor back, Right motor fwd
-    targetSpeedL = -SPEED_TURN;
-    targetSpeedR = SPEED_TURN;
+    targetSpeedL = -speed;
+    targetSpeedR = speed;
 }
 
-void turnRight() 
+void turnRight(int speed) 
 {
     // Left motor fwd, Right motor back
-    targetSpeedL = SPEED_TURN;
-    targetSpeedR = -SPEED_TURN;
+    targetSpeedL = speed;
+    targetSpeedR = -speed;
 }
 
 //Grid Commands w/ Ramping
 void driveStraight(int speed)
 {
     targetSpeedL = speed;
-    targetSpeedR = -speed;
+    targetSpeedR = speed;
 }
 
 void turnClockwise(int speed) 
