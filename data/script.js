@@ -225,6 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const speedSlider = document.getElementById('speed-slider');
         const speedDisplay = document.getElementById('speed-display');
 
+        
         //update the ui when slider moves
         if (speedSlider && speedDisplay)
         {

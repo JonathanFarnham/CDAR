@@ -20,3 +20,7 @@ long getEncoderAvg();
 
 //Ramping Function
 void updateMotorSpeeds();
+
+//Get Encoder Values for Debugging
+long getEncoderLeft();
+long getEncoderRight();

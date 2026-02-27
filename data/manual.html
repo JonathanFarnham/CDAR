@@ -28,7 +28,7 @@
             
             <div class = "speed-control">
                 <label for="speed-slider">Speed: <span id="speed-display">120</span></label>
-                <input type="range" id="speed-slider" min="60" max="255" value="120">
+                <input type="range" id="speed-slider" min="0" max="180" value="80" step="5">
             </div>
 
             <div class="d-pad-container">
@@ -37,6 +37,10 @@
                 <button class="d-btn stop-btn" id="btn-stop" data-cmd="STOP">STOP</button>
                 <button class="d-btn" id="btn-right" data-cmd="RIGHT">▶</button>
                 <button class="d-btn" id="btn-down" data-cmd="BACKWARD">▼</button>
+            </div>
+
+            <div class="encoder-display" style="text-align: center; margin-bottom: 1rem; font-weight: bold; color: var(--text);">
+                Encoders &rarr; Left: [<span id="enc-left">0</span>] | Right: [<span id="enc-right">0</span>]
             </div>
 
             <div class="log-display">

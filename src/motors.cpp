@@ -19,6 +19,12 @@ float targetSpeedR = 0;
 
 unsigned long lastRampTime = 0;
 
+//Kickstart State Tracking
+bool kickstartActiveL = false;
+bool kickstartActiveR = false;
+unsigned long kickstartTimerL = 0;
+unsigned long kickstartTimerR = 0;
+
 //Interrupt Service Routines
 void IRAM_ATTR isr_left()
 {
@@ -68,6 +74,16 @@ long getEncoderAvg()
     return (left_ticks + right_ticks) / 2;
 }
 
+long getEncoderLeft()
+{
+    return left_ticks;
+}
+
+long getEncoderRight()
+{
+    return right_ticks;
+}
+
 void setMotorHardware(int speed, int pinIn1, int pinIn2, int pinPWM, bool invert)
 {
     //If the motor is physically inverted, flip the target speed
@@ -98,30 +114,89 @@ void setMotorHardware(int speed, int pinIn1, int pinIn2, int pinPWM, bool invert
 
 void updateMotorSpeeds()
 {
-    if (millis() - lastRampTime >= RAMP_INTERVAL) {
-        lastRampTime = millis();
+    unsigned long currentMillis = millis();
 
-        //Ramp Left Motor
-        if (currentSpeedL < targetSpeedL) {
-            currentSpeedL += RAMP_STEP;
-            if (currentSpeedL > targetSpeedL) currentSpeedL = targetSpeedL;
-        } else if (currentSpeedL > targetSpeedL) {
-            currentSpeedL -= RAMP_STEP;
-            if (currentSpeedL < targetSpeedL) currentSpeedL = targetSpeedL;
+    // 1. Trigger Kickstart if starting from a dead stop
+    if ((int)currentSpeedL == 0 && targetSpeedL != 0 && !kickstartActiveL) {
+        kickstartActiveL = true;
+        kickstartTimerL = currentMillis;
+    }
+    if ((int)currentSpeedR == 0 && targetSpeedR != 0 && !kickstartActiveR) {
+        kickstartActiveR = true;
+        kickstartTimerR = currentMillis;
+    }
+
+    // 2. Handle Ramping (Updates every RAMP_INTERVAL)
+    bool updateHardware = false;
+    if (currentMillis - lastRampTime >= RAMP_INTERVAL) {
+        lastRampTime = currentMillis;
+        updateHardware = true;
+
+        // Ramp Left (only if the kickstart burst is finished)
+        if (!kickstartActiveL) {
+            if (currentSpeedL < targetSpeedL) {
+                currentSpeedL += RAMP_STEP;
+                if (currentSpeedL > targetSpeedL) currentSpeedL = targetSpeedL;
+            } else if (currentSpeedL > targetSpeedL) {
+                currentSpeedL -= RAMP_STEP;
+                if (currentSpeedL < targetSpeedL) currentSpeedL = targetSpeedL;
+            }
         }
 
-        //Ramp Right Motor
-        if (currentSpeedR < targetSpeedR) {
-            currentSpeedR += RAMP_STEP;
-            if (currentSpeedR > targetSpeedR) currentSpeedR = targetSpeedR;
-        } else if (currentSpeedR > targetSpeedR) {
-            currentSpeedR -= RAMP_STEP;
-            if (currentSpeedR < targetSpeedR) currentSpeedR = targetSpeedR;
+        // Ramp Right (only if the kickstart burst is finished)
+        if (!kickstartActiveR) {
+            if (currentSpeedR < targetSpeedR) {
+                currentSpeedR += RAMP_STEP;
+                if (currentSpeedR > targetSpeedR) currentSpeedR = targetSpeedR;
+            } else if (currentSpeedR > targetSpeedR) {
+                currentSpeedR -= RAMP_STEP;
+                if (currentSpeedR < targetSpeedR) currentSpeedR = targetSpeedR;
+            }
+        }
+    }
+
+    // 3. Apply Hardware Signals
+    if (kickstartActiveL || kickstartActiveR || updateHardware) {
+        
+        // --- Left Motor Application ---
+        if (kickstartActiveL) {
+            if (currentMillis - kickstartTimerL < KICKSTART_DURATION) {
+                // Apply full power burst in the target direction
+                int kickSpeed = (targetSpeedL > 0) ? KICKSTART_PWM : -KICKSTART_PWM;
+                setMotorHardware(kickSpeed, MOTOR_LEFT_IN1, MOTOR_LEFT_IN2, MOTOR_LEFT_EN, MOTOR_LEFT_INVERT);
+            } else {
+                // Burst finished: snap to the minimum moving speed, then let normal ramping resume
+                kickstartActiveL = false;
+                currentSpeedL = (targetSpeedL > 0) ? MIN_MOVING_PWM : -MIN_MOVING_PWM;
+                
+                // Safety check in case the commanded target speed is very low
+                if (abs(targetSpeedL) < MIN_MOVING_PWM) currentSpeedL = targetSpeedL; 
+                
+                setMotorHardware((int)currentSpeedL, MOTOR_LEFT_IN1, MOTOR_LEFT_IN2, MOTOR_LEFT_EN, MOTOR_LEFT_INVERT);
+            }
+        } else if (updateHardware) {
+            setMotorHardware((int)currentSpeedL, MOTOR_LEFT_IN1, MOTOR_LEFT_IN2, MOTOR_LEFT_EN, MOTOR_LEFT_INVERT);
         }
 
-        //Apply to Hardware w/Inversion Flags
-        setMotorHardware((int)currentSpeedL, MOTOR_LEFT_IN1, MOTOR_LEFT_IN2, MOTOR_LEFT_EN, MOTOR_LEFT_INVERT);
-        setMotorHardware((int)currentSpeedR, MOTOR_RIGHT_IN1, MOTOR_RIGHT_IN2, MOTOR_RIGHT_EN, MOTOR_RIGHT_INVERT);
+        // --- Right Motor Application ---
+        if (kickstartActiveR) {
+            if (currentMillis - kickstartTimerR < KICKSTART_DURATION) {
+                // Apply full power burst in the target direction
+                int kickSpeed = (targetSpeedR > 0) ? KICKSTART_PWM : -KICKSTART_PWM;
+                setMotorHardware(kickSpeed, MOTOR_RIGHT_IN1, MOTOR_RIGHT_IN2, MOTOR_RIGHT_EN, MOTOR_RIGHT_INVERT);
+            } else {
+                // Burst finished: snap to the minimum moving speed, then let normal ramping resume
+                kickstartActiveR = false;
+                currentSpeedR = (targetSpeedR > 0) ? MIN_MOVING_PWM : -MIN_MOVING_PWM;
+                
+                // Safety check in case the commanded target speed is very low
+                if (abs(targetSpeedR) < MIN_MOVING_PWM) currentSpeedR = targetSpeedR; 
+                
+                setMotorHardware((int)currentSpeedR, MOTOR_RIGHT_IN1, MOTOR_RIGHT_IN2, MOTOR_RIGHT_EN, MOTOR_RIGHT_INVERT);
+            }
+        } else if (updateHardware) {
+            setMotorHardware((int)currentSpeedR, MOTOR_RIGHT_IN1, MOTOR_RIGHT_IN2, MOTOR_RIGHT_EN, MOTOR_RIGHT_INVERT);
+        }
     }
 }
 

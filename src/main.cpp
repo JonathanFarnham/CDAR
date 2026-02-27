@@ -7,6 +7,10 @@
 //Task Handle for Web Server
 TaskHandle_t TaskWeb;
 
+//Debug Timer Variables
+unsigned long lastDebugTime = 0;
+const int DEBUG_INTERVAL = 10; //print every 10ms
+
 //Thread for Core 0: Web Server
 void TaskWebCode(void * pvParameters)
 {
@@ -50,6 +54,17 @@ void loop()
 {
   handleGrid();
   updateMotorSpeeds();
+
+  //debug print
+  if (millis() - lastDebugTime >= DEBUG_INTERVAL)
+  {
+    lastDebugTime = millis();
+
+    Serial.print("ENCODER L: ");
+    Serial.print(getEncoderLeft());
+    Serial.print(" |R: ");
+    Serial.println(getEncoderRight());
+  }
 
 
   //Small Delay to prevent CPU saturation on core 1

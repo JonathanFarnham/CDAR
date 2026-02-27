@@ -24,6 +24,10 @@
 #define SPEED_MOVE 80
 #define SPEED_TURN 140
 
+//Motor Kickstart
+#define KICKSTART_PWM 180
+#define KICKSTART_DURATION 20
+#define MIN_MOVING_PWM 20
 
 //Motor Inversion Controls
 #define MOTOR_LEFT_INVERT false //change to true if left wheel drives backwards when asked to go forward
