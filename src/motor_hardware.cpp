@@ -19,10 +19,10 @@ void IRAM_ATTR isr_r()
 {
     if (digitalRead(ENCODER_RIGHT_B) == LOW)
     {
-        ticks_r++;
+        ticks_r--;
     } else
     {
-        ticks_r--;
+        ticks_r++;
     }
 }
 

@@ -36,7 +36,7 @@
 
 //Kickstart Settings
 #define KICKSTART_MS 50
-#define KICKSTART_PWM 120
+#define KICKSTART_PWM 0
 #define MIN_REGULATED_RPM 40
 
 //Inversion
