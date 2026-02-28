@@ -142,7 +142,7 @@ void updateDriveSystem()
     }
 }
 
-float getCurrentRPMleft() { return currentRPM_L; }
+float getCurrentRPMLeft() { return currentRPM_L; }
 float getCurrentRPMRight() { return currentRPM_R; }
 
 float getTargetRPMLeft() { return targetRPM_L; }

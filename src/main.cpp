@@ -60,9 +60,9 @@ void loop()
   {
     lastDebugTime = millis();
     Serial.print("RPM L: "); Serial.print(getCurrentRPMLeft());
-    Serial.print(" | Target: "); Serial.println(getCurrentRPMLeft());
+    Serial.print(" | Target: "); Serial.println(getTargetRPMLeft());
     Serial.print("RPM R: "); Serial.print(getCurrentRPMRight());
-    Serial.print(" | Target: "); Serial.println(getCurrentRPMRight());
+    Serial.print(" | Target: "); Serial.println(getTargetRPMRight());
   }
 
 
