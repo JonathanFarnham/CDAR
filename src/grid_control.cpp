@@ -1,6 +1,7 @@
 #include "config.h"
-#include "motors.h"
 #include "grid_control.h"
+#include "drive_system.h"   
+#include "motor_hardware.h"
 #include <Arduino.h>
 
 //Grid Params
@@ -41,16 +42,19 @@ void startGridRun()
     current_turn_right = turn_right_first;
 
     //setup first move (length)
-    resetEncoders();
+    resetTickCount();
     target_ticks = grid_len_ft * TICKS_PER_FOOT;
-    driveStraight(SPEED_GRID_FWD);
+    
+    //Use RPM instead of PWM
+    setTargetRPM(SPEED_GRID_RPM, SPEED_GRID_RPM); 
+    
     Serial.println("Grid Started");
 }
 
 void stopGridRun()
 {
     currentState = IDLE;
-    stopBot();
+    stopAll(); // UPDATED
     isAutoPilotActive = false; //Unlock
     Serial.println("Grid Stopped/Finished");
 }
@@ -74,14 +78,15 @@ void handleGrid()
         return;
     }
 
-    long current_dist = getEncoderAvg();
+    // UPDATED: Calculate Average Distance manually
+    long current_dist = (getTicksLeft() + getTicksRight()) / 2;
 
     //check if target distance reached
     if (current_dist >= target_ticks)
     {
-        stopBot();
+        stopAll();
         delay(200);
-        resetEncoders();
+        resetTickCount();
 
         //State transition
         switch (currentState)
@@ -95,8 +100,15 @@ void handleGrid()
                 {
                     currentState = TURNING_1;
                     target_ticks = TICKS_PER_TURN;
-                    if (current_turn_right) turnClockwise(SPEED_GRID_TURN);
-                    else turnCounterClockwise(SPEED_GRID_TURN);
+                    
+                    //Manual RPM setting for turning
+                    if (current_turn_right) {
+                        // Turn Right (Clockwise): Left Fwd, Right Back
+                        setTargetRPM(-SPEED_TURN_RPM, SPEED_TURN_RPM); 
+                    } else {
+                        // Turn Left (Counter-Clockwise): Left Back, Right Fwd
+                        setTargetRPM(SPEED_TURN_RPM, -SPEED_TURN_RPM);
+                    }
                 }
                 break;
             
@@ -107,7 +119,7 @@ void handleGrid()
                 {
                     float spacing = grid_width_ft / (total_passes - 1);
                     target_ticks = spacing * TICKS_PER_FOOT;
-                    driveStraight(SPEED_GRID_FWD);
+                    setTargetRPM(SPEED_GRID_RPM, SPEED_GRID_RPM); // UPDATED
                 }
                 break;
 
@@ -115,8 +127,12 @@ void handleGrid()
                 //Finished driving short now turn same direction
                 currentState = TURNING_2;
                 target_ticks = TICKS_PER_TURN;
-                if (current_turn_right) turnClockwise(SPEED_GRID_TURN);
-                else turnCounterClockwise(SPEED_GRID_TURN);
+                
+                if (current_turn_right) {
+                    setTargetRPM(-SPEED_TURN_RPM, SPEED_TURN_RPM);
+                } else {
+                    setTargetRPM(SPEED_TURN_RPM, -SPEED_TURN_RPM);
+                }
                 break;
 
             case TURNING_2:
@@ -127,7 +143,7 @@ void handleGrid()
                 current_turn_right = !current_turn_right;
 
                 target_ticks = grid_len_ft * TICKS_PER_FOOT;
-                driveStraight(SPEED_GRID_FWD);
+                setTargetRPM(SPEED_GRID_RPM, SPEED_GRID_RPM);
                 break;
         }
     }

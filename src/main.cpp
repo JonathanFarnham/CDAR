@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "config.h"
-#include "motors.h"
+#include "drive_system.h"
 #include "web_server.h"
 #include "grid_control.h"
 
@@ -32,7 +32,7 @@ void setup()
   Serial.begin(115200);
 
   //Initialize Hardware
-  initMotors();
+  initDriveSystem();
   initWebServer();
 
   //Create web server task on Core 0
@@ -53,17 +53,16 @@ void setup()
 void loop()
 {
   handleGrid();
-  updateMotorSpeeds();
+  updateDriveSystem();
 
   //debug print
   if (millis() - lastDebugTime >= DEBUG_INTERVAL)
   {
     lastDebugTime = millis();
-
-    Serial.print("ENCODER L: ");
-    Serial.print(getEncoderLeft());
-    Serial.print(" |R: ");
-    Serial.println(getEncoderRight());
+    Serial.print("RPM L: "); Serial.print(getCurrentRPMLeft());
+    Serial.print(" | Target: "); Serial.println(getCurrentRPMLeft());
+    Serial.print("RPM R: "); Serial.print(getCurrentRPMRight());
+    Serial.print(" | Target: "); Serial.println(getCurrentRPMRight());
   }
 
 

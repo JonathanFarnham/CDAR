@@ -6,35 +6,47 @@
 #define WIFI_SSID "CDAR_Control"
 #define WIFI_PASS "password"
 
-//Left Motor
+//Left Motor Pin Setup
 #define MOTOR_LEFT_EN 13
 #define MOTOR_LEFT_IN1 12
 #define MOTOR_LEFT_IN2 14
 #define ENCODER_LEFT_A 21
 #define ENCODER_LEFT_B 22
 
-//Right Motor
+//Right Motor Pin Setup
 #define MOTOR_RIGHT_EN 27
 #define MOTOR_RIGHT_IN1 32
 #define MOTOR_RIGHT_IN2 33
 #define ENCODER_RIGHT_A 25
 #define ENCODER_RIGHT_B 26
 
-//Motor Speeds
-#define SPEED_MOVE 80
-#define SPEED_TURN 140
+//Physics and Encoder
+#define COUNTS_PER_REV 28
+#define MAX_RPM_HARDWARE 5600
+#define MAX_OPERATING_RPM 3000
 
-//Motor Kickstart
-#define KICKSTART_PWM 180
-#define KICKSTART_DURATION 20
-#define MIN_MOVING_PWM 20
+//PID Tuning
+//KP: proportional value power per error unit
+//Ki: Integral (accumulates error to overcome friction)
+//kd: derivative (dampens oscillation)
+#define PID_KP 0.5
+#define PID_KI 0.05
+#define PID_KD 0.01
+#define CALC_INTERVAL 20 //Calculate velocity every 20ms
 
-//Motor Inversion Controls
-#define MOTOR_LEFT_INVERT true //change to true if left wheel drives backwards when asked to go forward
-#define MOTOR_RIGHT_INVERT false //change to true if the right wheel drives backwards when asked to go forward
+//Kickstart Settings
+#define KICKSTART_MS 50
+#define KICKSTART_PWM 200
+#define MIN_REGULATED_RPM 40
 
-//Robot Physical Parameters (I NEED TO UPDATE THESE)
+//Inversion
+#define MOTOR_LEFT_INVERT true
+#define MOTOR_RIGHT_INVERT false
+
+//Robot Parameters (signifigant adjustments needed)
 #define TICKS_PER_FOOT 282
 #define TICKS_PER_TURN 145
-#define SPEED_GRID_FWD 180
-#define SPEED_GRID_TURN 180
+
+//Grid Speed Values
+#define SPEED_GRID_RPM 1500
+#define SPEED_TURN_RPM 1000

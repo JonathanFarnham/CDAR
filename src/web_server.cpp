@@ -1,10 +1,11 @@
 #include <WiFi.h>
 #include <LittleFS.h>
 #include <ArduinoJson.h>
+#include <WebServer.h>
 #include "config.h"
 #include "web_server.h"
-#include "motors.h"
 #include "grid_control.h"
+#include "drive_system.h"
 
 WebServer server(80);
 
@@ -57,23 +58,16 @@ void handleMove()
     }
 
     //Get Manual Control Commands
+    int speedRPM = doc["speed"] | 1000;
     const char* cmd = doc["direction"];
-    int speedVal = doc["speed"] | 120;
-    Serial.print("Executing a Command: ");
-    Serial.print(cmd);
-    Serial.print(" at Speed: ");
-    Serial.println(speedVal);
 
-    if (strcmp(cmd, "FORWARD") == 0) moveForward(speedVal);
-    else if (strcmp(cmd, "BACKWARD") == 0) moveBackward(speedVal);
-    else if (strcmp(cmd, "LEFT") == 0) turnLeft(speedVal);
-    else if (strcmp(cmd, "RIGHT") == 0) turnRight(speedVal);
-    else if (strcmp(cmd, "STOP") == 0) stopBot();
-    else {
-        server.send(400, "application/json", "{\"error\":\"Unknown Command\"}");
-        return;
-    }
-    server.send(200, "application/json", "{\"status\":\"success\", \"cmd\":\"" + String(cmd) + "\"}");
+    if (strcmp(cmd, "FORWARD") == 0) setTargetRPM(speedRPM, speedRPM);
+    else if (strcmp(cmd, "BACKWARD") == 0) setTargetRPM(-speedRPM, -speedRPM);
+    else if (strcmp(cmd, "LEFT") == 0) setTargetRPM(-speedRPM, speedRPM); // Spin
+    else if (strcmp(cmd, "RIGHT") == 0) setTargetRPM(speedRPM, -speedRPM); // Spin
+    else if (strcmp(cmd, "STOP") == 0) stopAll();
+    
+    server.send(200, "application/json", "{\"status\":\"success\"}");
 }
 
 //Public Init Function

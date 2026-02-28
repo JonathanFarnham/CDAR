@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         const sendCommand = (cmd) => {
             const timestamp = new Date().toLocaleTimeString();
-            const currentSpeed = speedSlider ? parseInt(speedSlider.value) : 120;
+            const currentSpeed = speedSlider ? parseInt(speedSlider.value) : 1000;
 
             if(logDisplay) logDisplay.innerText = `[${timestamp}] Sending: ${cmd}`;
             // SEND DATA TO ESP32 with speed value
