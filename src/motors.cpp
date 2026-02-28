@@ -221,16 +221,16 @@ void moveBackward(int speed)
 
 void turnLeft(int speed) 
 {
-    // Left motor back, Right motor fwd
-    targetSpeedL = -speed;
-    targetSpeedR = speed;
+    // Left motor forward (gearbox back), Right motor back (gearbox fwd)
+    targetSpeedL = speed;
+    targetSpeedR = -speed;
 }
 
 void turnRight(int speed) 
 {
-    // Left motor fwd, Right motor back
-    targetSpeedL = speed;
-    targetSpeedR = -speed;
+    // Left motor back (gearbox fwd), Right motor fwd (gearbox back)
+    targetSpeedL = -speed;
+    targetSpeedR = speed;
 }
 
 //Grid Commands w/ Ramping
@@ -240,14 +240,16 @@ void driveStraight(int speed)
     targetSpeedR = speed;
 }
 
-void turnClockwise(int speed) 
+void turnClockwise(int speed) //turn right in grid mode
 {
-    targetSpeedL = speed;
-    targetSpeedR = -speed;
-}
-
-void turnCounterClockwise(int speed) 
-{
+    //right motor fwd gearbox back, left motor back gearbox fwd
     targetSpeedL = -speed;
     targetSpeedR = speed;
+}
+
+void turnCounterClockwise(int speed) //turn left in grid mode
+{
+    //left gearbox back (left motor fwd) right gearbox fwd (right motor back)
+    targetSpeedL = speed;
+    targetSpeedR = -speed;
 }

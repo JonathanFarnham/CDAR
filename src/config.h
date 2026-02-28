@@ -30,7 +30,7 @@
 #define MIN_MOVING_PWM 20
 
 //Motor Inversion Controls
-#define MOTOR_LEFT_INVERT false //change to true if left wheel drives backwards when asked to go forward
+#define MOTOR_LEFT_INVERT true //change to true if left wheel drives backwards when asked to go forward
 #define MOTOR_RIGHT_INVERT false //change to true if the right wheel drives backwards when asked to go forward
 
 //Robot Physical Parameters (I NEED TO UPDATE THESE)
