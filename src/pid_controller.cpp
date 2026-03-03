@@ -13,9 +13,15 @@ float PIDController::compute(float setpoint, float measured, float dt_seconds)
 
     //integral
     _integral += error * dt_seconds;
+
     //Anti windup clamping to prevent integral growing infinetly
-    if (_integral > 1000) _integral = 1000;
-    if (_integral < -1000) _integral = -1000;
+    float maxIntegral = (_ki > 0) ? (255.0f / _ki) : 0; 
+    if (maxIntegral > 0) 
+    {
+        if (_integral > maxIntegral) _integral = maxIntegral;
+        else if (_integral < -maxIntegral) _integral = -maxIntegral;
+    }
+
     float I = _ki * _integral;
 
     //derivative

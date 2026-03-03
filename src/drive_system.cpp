@@ -9,12 +9,6 @@ float targetRPM_R = 0;
 float currentRPM_L = 0;
 float currentRPM_R = 0;
 
-//Kickstart Flags
-bool kickstartActive_L = false;
-unsigned long kickstartStart_L = 0;
-bool kickstartActive_R = false;
-unsigned long kickstartStart_R = 0;
-
 //PID Instances
 PIDController pidL(PID_KP, PID_KI, PID_KD);
 PIDController pidR(PID_KP, PID_KI, PID_KD);
@@ -27,24 +21,12 @@ long lastTicks_R = 0;
 void initDriveSystem()
 {
     initMotorHardware();
+    pidL.reset();
+    pidR.reset();
 }
 
 void setTargetRPM(float leftRPM, float rightRPM)
 {
-    //If start from 0 trigger kickstart
-    if (targetRPM_L == 0 && leftRPM != 0)
-    {
-        kickstartActive_L = true;
-        kickstartStart_L = millis();
-        pidL.reset();
-    }
-    if (targetRPM_R == 0 && rightRPM != 0)
-    {
-        kickstartActive_R = true;
-        kickstartStart_R = millis();
-        pidR.reset();
-    }
-
     targetRPM_L = leftRPM;
     targetRPM_R = rightRPM;
 }
@@ -53,8 +35,6 @@ void stopAll()
 {
     targetRPM_L = 0;
     targetRPM_R = 0;
-    kickstartActive_L = false;
-    kickstartActive_R = false;
     pidL.reset();
     pidR.reset();
     setMotorRaw(0, 0);
@@ -65,12 +45,13 @@ void updateDriveSystem()
     unsigned long now = millis();
     long dt_ms = now - lastCalcTime;
 
+    //Run strictly at the defined interval
     if (dt_ms >= CALC_INTERVAL)
     {
         lastCalcTime = now;
         float dt_sec = dt_ms / 1000.0;
 
-        // 1. Calculate Current RPM
+        //Calculate Current RPM------------------>
         long currTicksL = getTicksLeft();
         long currTicksR = getTicksRight();
 
@@ -80,64 +61,42 @@ void updateDriveSystem()
         lastTicks_L = currTicksL;
         lastTicks_R = currTicksR;
 
-        // RPM = (ticks / dt) * (60s / 1m) / (ticks_per_rev)
-        float rawRPM_L = (deltaL / dt_sec) * 60.0 / COUNTS_PER_REV;
+        //calculate raw RPM
+        float rawRPM_L = (deltaL / dt_sec) * 60 / COUNTS_PER_REV;
         float rawRPM_R = (deltaR / dt_sec) * 60.0 / COUNTS_PER_REV;
 
-        // Simple Low Pass Filter to smooth out jitter from low-res encoders
+        //Low Pass Filter
         currentRPM_L = (currentRPM_L * 0.7) + (rawRPM_L * 0.3);
         currentRPM_R = (currentRPM_R * 0.7) + (rawRPM_R * 0.3);
 
-        // 2. Control Logic
+        //PID CONTROL---------------------------->
         int outputL = 0;
         int outputR = 0;
-
-        // --- LEFT MOTOR CONTROL ---
+        
+        //Left Motor
         if (targetRPM_L == 0)
         {
             outputL = 0;
-            kickstartActive_L = false;
-        } 
-        else if (kickstartActive_L)
+            pidL.reset();
+        } else 
         {
-            // Kickstart Mode-> Max Power Open Loop
-            outputL = (targetRPM_L > 0) ? KICKSTART_PWM : -KICKSTART_PWM;
-            if (now - kickstartStart_L > KICKSTART_MS)
-            {
-                kickstartActive_L = false; // Transition to PID
-            }
-        } 
-        else 
-        {
-            // PID Mode
-            float pidOut = pidL.compute(targetRPM_L, currentRPM_L, dt_sec);
-            outputL = (int)pidOut;
+            outputL = (int)pidL.compute(targetRPM_L, currentRPM_L, dt_sec);
         }
 
-        // --- RIGHT MOTOR CONTROL ---
+        //Right Motor
         if (targetRPM_R == 0)
         {
             outputR = 0;
-            kickstartActive_R = false;
-        } 
-        else if (kickstartActive_R)
+            pidR.reset();
+        } else
         {
-            outputR = (targetRPM_R > 0) ? KICKSTART_PWM : -KICKSTART_PWM;
-            if (now - kickstartStart_R > KICKSTART_MS)
-            {
-                kickstartActive_R = false;
-            }
-        } 
-        else
-        {
-            float pidOut = pidR.compute(targetRPM_R, currentRPM_R, dt_sec);
-            outputR = (int)pidOut;
+            outputR = (int)pidR.compute(targetRPM_R, currentRPM_R, dt_sec);
         }
 
-        // 3. Constrain and Output
+        //Constrain Output ---------------->
         outputL = constrain(outputL, -255, 255);
         outputR = constrain(outputR, -255, 255);
-        
+
         setMotorRaw(outputL, outputR);
     }
 }
