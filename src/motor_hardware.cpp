@@ -4,8 +4,27 @@
 volatile long ticks_l = 0;
 volatile long ticks_r = 0;
 
-void IRAM_ATTR isr_l() { ticks_l++; }
-void IRAM_ATTR isr_r() { ticks_r++; }
+void IRAM_ATTR isr_l()
+{
+    if (digitalRead(ENCODER_LEFT_B) == LOW)
+    {
+        ticks_l++;
+    } else 
+    {
+        ticks_l--;
+    }
+}
+
+void IRAM_ATTR isr_r()
+{
+    if (digitalRead(ENCODER_RIGHT_B) == LOW)
+    {
+        ticks_r--;
+    } else
+    {
+        ticks_r++;
+    }
+}
 
 void initMotorHardware()
 {
@@ -15,8 +34,12 @@ void initMotorHardware()
     pinMode(MOTOR_RIGHT_EN, OUTPUT);
     pinMode(MOTOR_RIGHT_IN1, OUTPUT);
     pinMode(MOTOR_RIGHT_IN2, OUTPUT);
+   
     pinMode(ENCODER_LEFT_A, INPUT_PULLUP);
+    pinMode(ENCODER_LEFT_B, INPUT_PULLUP);
+
     pinMode(ENCODER_RIGHT_A, INPUT_PULLUP);
+    pinMode(ENCODER_RIGHT_B, INPUT_PULLUP);
 
     attachInterrupt(digitalPinToInterrupt(ENCODER_LEFT_A), isr_l, RISING);
     attachInterrupt(digitalPinToInterrupt(ENCODER_RIGHT_A), isr_r, RISING);
