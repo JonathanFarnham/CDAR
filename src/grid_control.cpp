@@ -79,7 +79,7 @@ void handleGrid()
     }
 
     // UPDATED: Calculate Average Distance manually
-    long current_dist = (getTicksLeft() + getTicksRight()) / 2;
+    long current_dist = (abs(getTicksLeft()) + abs(getTicksRight())) / 2;
 
     //check if target distance reached
     if (current_dist >= target_ticks)
