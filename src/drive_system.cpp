@@ -119,7 +119,7 @@ void updateDriveSystem()
             float scaledTicksLeft = getTicksLeft() * WHEEL_TRIM;
             float tickDiff = (scaledTicksLeft - getTicksRight()) - syncTickOffset;
 
-            float syncKp = 2.0;
+            float syncKp = 0.5;
             float syncAdjustment = tickDiff * syncKp;
             syncAdjustment = constrain(syncAdjustment, -40, 40);
 
