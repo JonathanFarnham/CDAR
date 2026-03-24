@@ -12,6 +12,9 @@ float currentRPM_L = 0;
 float currentRPM_R = 0;
 //Ramp settings -> step RPM per calc cycle
 const float RAMP_STEP_RPM = 30.0;
+//Straight Line Assist Tracking
+bool wasDrivingStraight = false;
+float syncTickOffset = 0;
 
 //PID Instances
 PIDController pidL(PID_KP, PID_KI, PID_KD);
@@ -103,6 +106,12 @@ void updateDriveSystem()
         //Cross Coupling to Reduce Straight Line Drift
         if (targetRPM_L == targetRPM_R && targetRPM_L > 0) //Only Apply to straight line command
         {
+            if(!wasDrivingStraight)
+            {
+                syncTickOffset = (getTicksLeft() * WHEEL_TRIM) - getTicksRight();
+                wasDrivingStraight = true;
+            }
+
             //Scale Left ticks to account for physical difference
             float scaledTicksLeft = getTicksLeft() * WHEEL_TRIM;
             //Calculate difference in ticks accumulated between sides
@@ -116,6 +125,10 @@ void updateDriveSystem()
             //Apply correction to active target
             activeTargetRPM_L -= syncAdjustment;
             activeTargetRPM_R += syncAdjustment;
+        } else 
+        {
+            //When Turning, reversing, or stopped, reset the flag
+            wasDrivingStraight = false;
         }
 
         //PID CONTROL---------------------------->
