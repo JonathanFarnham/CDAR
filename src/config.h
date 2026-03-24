@@ -30,8 +30,8 @@
 //Ki: Integral (accumulates error to overcome friction)
 //kd: derivative (dampens oscillation)
 #define PID_KP 0.8
-#define PID_KI 0.05
-#define PID_KD 0.01
+#define PID_KI 0.2
+#define PID_KD 0.00
 #define CALC_INTERVAL 100 //Calculate velocity every 100ms
 
 //Kickstart Settings
