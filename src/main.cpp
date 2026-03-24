@@ -59,10 +59,22 @@ void loop()
   if (millis() - lastDebugTime >= DEBUG_INTERVAL)
   {
     lastDebugTime = millis();
-    Serial.print("RPM L: "); Serial.print(getCurrentRPMLeft());
-    Serial.print(" | Target: "); Serial.println(getTargetRPMLeft());
-    Serial.print("RPM R: "); Serial.print(getCurrentRPMRight());
-    Serial.print(" | Target: "); Serial.println(getTargetRPMRight());
+    
+    // Format: Label1:Value1,Label2:Value2,...
+    Serial.print("RPM_L:");
+    Serial.print(getCurrentRPMLeft());
+    Serial.print(",");
+    
+    Serial.print("Target_L:");
+    Serial.print(getTargetRPMLeft());
+    Serial.print(",");
+    
+    Serial.print("RPM_R:");
+    Serial.print(getCurrentRPMRight());
+    Serial.print(",");
+    
+    Serial.print("Target_R:");
+    Serial.println(getTargetRPMRight()); // println only at the very end
   }
 
 

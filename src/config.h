@@ -40,8 +40,8 @@
 #define MIN_REGULATED_RPM 40
 
 //Inversion
-#define MOTOR_LEFT_INVERT true
-#define MOTOR_RIGHT_INVERT false
+#define MOTOR_LEFT_INVERT false
+#define MOTOR_RIGHT_INVERT true
 
 //Robot Parameters (signifigant adjustments needed)
 #define TICKS_PER_FOOT 282
