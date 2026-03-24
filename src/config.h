@@ -29,10 +29,10 @@
 //KP: proportional value power per error unit
 //Ki: Integral (accumulates error to overcome friction)
 //kd: derivative (dampens oscillation)
-#define PID_KP 0.5
+#define PID_KP 0.8
 #define PID_KI 0.05
 #define PID_KD 0.01
-#define CALC_INTERVAL 20 //Calculate velocity every 20ms
+#define CALC_INTERVAL 100 //Calculate velocity every 100ms
 
 //Kickstart Settings
 #define KICKSTART_MS 50

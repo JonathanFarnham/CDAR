@@ -9,7 +9,7 @@ TaskHandle_t TaskWeb;
 
 //Debug Timer Variables
 unsigned long lastDebugTime = 0;
-const int DEBUG_INTERVAL = 10; //print every 10ms
+const int DEBUG_INTERVAL = 100; //print every 10ms
 
 //Thread for Core 0: Web Server
 void TaskWebCode(void * pvParameters)
