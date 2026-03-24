@@ -103,8 +103,12 @@ void updateDriveSystem()
             activeTargetRPM_R -= RAMP_STEP_RPM;
         }
         
-        //Cross Coupling to Reduce Straight Line Drift
-        if (targetRPM_L == targetRPM_R && targetRPM_L > 0) //Only Apply to straight line command
+        //Temp Variables for CrossCoupling
+        float pidTarget_L = activeTargetRPM_L;
+        float pidTarget_R = activeTargetRPM_R;
+        
+        //Cross Coupling to Reduce Straight Line Drift ------------------->
+        if (targetRPM_L == targetRPM_R && targetRPM_L > 0) 
         {
             if(!wasDrivingStraight)
             {
@@ -112,22 +116,18 @@ void updateDriveSystem()
                 wasDrivingStraight = true;
             }
 
-            //Scale Left ticks to account for physical difference
             float scaledTicksLeft = getTicksLeft() * WHEEL_TRIM;
-            //Calculate difference in ticks accumulated between sides
-            long tickDiff = (scaledTicksLeft - getTicksRight()) - syncTickOffset;
+            float tickDiff = (scaledTicksLeft - getTicksRight()) - syncTickOffset;
 
-            //Proportional Correction
             float syncKp = 2.0;
             float syncAdjustment = tickDiff * syncKp;
             syncAdjustment = constrain(syncAdjustment, -40, 40);
 
-            //Apply correction to active target
-            activeTargetRPM_L -= syncAdjustment;
-            activeTargetRPM_R += syncAdjustment;
+            // Apply correction to the TEMPORARY variables
+            pidTarget_L -= syncAdjustment;
+            pidTarget_R += syncAdjustment;
         } else 
         {
-            //When Turning, reversing, or stopped, reset the flag
             wasDrivingStraight = false;
         }
 
@@ -135,19 +135,17 @@ void updateDriveSystem()
         int outputL = 0;
         int outputR = 0;
         
-        //Left Motor
-        if (targetRPM_L == 0) // Always check the final target for hard stops
+        if (targetRPM_L == 0) 
         {
             outputL = 0;
             activeTargetRPM_L = 0;
             pidL.reset();
         } else 
         {
-            // Feed the ACTIVE target into the PID, not the final target
-            outputL = (int)pidL.compute(activeTargetRPM_L, currentRPM_L, dt_sec);
+            // Feed the TEMPORARY target into the PID
+            outputL = (int)pidL.compute(pidTarget_L, currentRPM_L, dt_sec);
         }
 
-        //Right Motor
         if (targetRPM_R == 0)
         {
             outputR = 0;
@@ -155,10 +153,10 @@ void updateDriveSystem()
             pidR.reset();
         } else
         {
-            outputR = (int)pidR.compute(activeTargetRPM_R, currentRPM_R, dt_sec);
+            // Feed the TEMPORARY target into the PID
+            outputR = (int)pidR.compute(pidTarget_R, currentRPM_R, dt_sec);
         }
 
-        //Constrain Output ---------------->
         outputL = constrain(outputL, -200, 200);
         outputR = constrain(outputR, -200, 200);
 
