@@ -115,7 +115,7 @@ void updateDriveSystem()
             //Scale Left ticks to account for physical difference
             float scaledTicksLeft = getTicksLeft() * WHEEL_TRIM;
             //Calculate difference in ticks accumulated between sides
-            long tickDiff = scaledTicksLeft - getTicksRight();
+            long tickDiff = (scaledTicksLeft - getTicksRight()) - syncTickOffset;
 
             //Proportional Correction
             float syncKp = 2.0;
