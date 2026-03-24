@@ -25,14 +25,15 @@
 #define MAX_RPM_HARDWARE 5600
 #define MAX_OPERATING_RPM 3000
 
-//PID Tuning
+//PID Tuning + Wheel Trim
 //KP: proportional value power per error unit
 //Ki: Integral (accumulates error to overcome friction)
 //kd: derivative (dampens oscillation)
 #define PID_KP 0.8
-#define PID_KI 0.2
+#define PID_KI 0.3
 #define PID_KD 0.00
 #define CALC_INTERVAL 100 //Calculate velocity every 100ms
+#define WHEEL_TRIM 1.05
 
 //Kickstart Settings
 #define KICKSTART_MS 50

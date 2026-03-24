@@ -100,15 +100,16 @@ void updateDriveSystem()
             activeTargetRPM_R -= RAMP_STEP_RPM;
         }
         
-        /*
         //Cross Coupling to Reduce Straight Line Drift
         if (targetRPM_L == targetRPM_R && targetRPM_L > 0) //Only Apply to straight line command
         {
+            //Scale Left ticks to account for physical difference
+            float scaledTicksLeft = getTicksLeft() * WHEEL_TRIM;
             //Calculate difference in ticks accumulated between sides
-            long tickDiff = getTicksLeft() - getTicksRight();
+            long tickDiff = scaledTicksLeft - getTicksRight();
 
             //Proportional Correction
-            float syncKp = 1.5;
+            float syncKp = 2.0;
             float syncAdjustment = tickDiff * syncKp;
             syncAdjustment = constrain(syncAdjustment, -40, 40);
 
@@ -116,7 +117,6 @@ void updateDriveSystem()
             activeTargetRPM_L -= syncAdjustment;
             activeTargetRPM_R += syncAdjustment;
         }
-        */
 
         //PID CONTROL---------------------------->
         int outputL = 0;
