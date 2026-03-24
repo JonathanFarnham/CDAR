@@ -48,5 +48,5 @@
 #define TICKS_PER_TURN 145
 
 //Grid Speed Values
-#define SPEED_GRID_RPM 1500
-#define SPEED_TURN_RPM 1000
+#define SPEED_GRID_RPM 300
+#define SPEED_TURN_RPM 200
