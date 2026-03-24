@@ -99,7 +99,8 @@ void updateDriveSystem()
         {
             activeTargetRPM_R -= RAMP_STEP_RPM;
         }
-
+        
+        /*
         //Cross Coupling to Reduce Straight Line Drift
         if (targetRPM_L == targetRPM_R && targetRPM_L > 0) //Only Apply to straight line command
         {
@@ -115,6 +116,7 @@ void updateDriveSystem()
             activeTargetRPM_L -= syncAdjustment;
             activeTargetRPM_R += syncAdjustment;
         }
+        */
 
         //PID CONTROL---------------------------->
         int outputL = 0;
