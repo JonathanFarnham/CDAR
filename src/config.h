@@ -50,4 +50,4 @@
 
 //Grid Speed Values
 #define SPEED_GRID_RPM 300
-#define SPEED_TURN_RPM 200
+#define SPEED_TURN_RPM 100
