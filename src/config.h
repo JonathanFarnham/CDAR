@@ -33,7 +33,7 @@
 #define PID_KI 0.3
 #define PID_KD 0.00
 #define CALC_INTERVAL 100 //Calculate velocity every 100ms
-#define WHEEL_TRIM 1.04   //Reduces Speed of Left Motor to account for mechanical difference and tolerance
+#define WHEEL_TRIM 1.03   //Reduces Speed of Left Motor to account for mechanical difference and tolerance
 
 //Kickstart Settings
 #define KICKSTART_MS 50
@@ -45,9 +45,9 @@
 #define MOTOR_RIGHT_INVERT true
 
 //Robot Parameters (signifigant adjustments needed)
-#define TICKS_PER_FOOT 282
-#define TICKS_PER_TURN 145
+#define TICKS_PER_FOOT 51
+#define TICKS_PER_TURN 42
 
 //Grid Speed Values
 #define SPEED_GRID_RPM 300
-#define SPEED_TURN_RPM 100
+#define SPEED_TURN_RPM 200

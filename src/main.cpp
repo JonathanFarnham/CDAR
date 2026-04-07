@@ -3,6 +3,7 @@
 #include "drive_system.h"
 #include "web_server.h"
 #include "grid_control.h"
+#include "motor_hardware.h"
 
 //Task Handle for Web Server
 TaskHandle_t TaskWeb;
@@ -60,21 +61,12 @@ void loop()
   {
     lastDebugTime = millis();
     
-    // Format: Label1:Value1,Label2:Value2,...
-    Serial.print("RPM_L:");
-    Serial.print(getCurrentRPMLeft());
+    Serial.print("Ticks_L:");
+    Serial.print(getTicksLeft());
     Serial.print(",");
     
-    Serial.print("Target_L:");
-    Serial.print(getTargetRPMLeft());
-    Serial.print(",");
-    
-    Serial.print("RPM_R:");
-    Serial.print(getCurrentRPMRight());
-    Serial.print(",");
-    
-    Serial.print("Target_R:");
-    Serial.println(getTargetRPMRight()); // println only at the very end
+    Serial.print("Ticks_R:");
+    Serial.println(getTicksRight());
   }
 
 
