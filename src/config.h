@@ -33,7 +33,7 @@
 #define PID_KI 0.3
 #define PID_KD 0.00
 #define CALC_INTERVAL 100 //Calculate velocity every 100ms
-#define WHEEL_TRIM 1.04
+#define WHEEL_TRIM 1.04   //Reduces Speed of Left Motor to account for mechanical difference and tolerance
 
 //Kickstart Settings
 #define KICKSTART_MS 50
