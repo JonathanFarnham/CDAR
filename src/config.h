@@ -45,8 +45,8 @@
 #define MOTOR_RIGHT_INVERT true
 
 //Robot Parameters (signifigant adjustments needed)
-#define TICKS_PER_FOOT 51
-#define TICKS_PER_TURN 42
+#define TICKS_PER_FOOT 50
+#define TICKS_PER_TURN 54
 
 //Grid Speed Values
 #define SPEED_GRID_RPM 300
