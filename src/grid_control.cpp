@@ -40,6 +40,8 @@ void startGridRun()
 
     isAutoPilotActive = true; //lock
 
+    calibrateMPU();
+
     currentState = DRIVING_LONG;
     current_pass = 1;
     current_turn_right = turn_right_first;

@@ -31,23 +31,29 @@ void initMPU()
     mpu.setGyroRange(MPU6050_RANGE_500_DEG);
     mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
 
-    //Set ESP pin to receive the interrupt
     pinMode(MPU_INT_PIN, INPUT);
 
-    //Enable Data Ready interrupt
-    Wire.beginTransmission(0x68); //default address for MPU
-    Wire.write(0x38); //Target the INT_ENABLE register
-    Wire.write(0x01); //Write 1 to bit 0 (DATA_RDY_EN)
+    Wire.beginTransmission(0x68); 
+    Wire.write(0x38); 
+    Wire.write(0x01); 
     Wire.endTransmission();
 
-    //Attach ISR trigger to rising edge
     attachInterrupt(digitalPinToInterrupt(MPU_INT_PIN), dmpDataReady, RISING);
+    
+    lastMPUTime = micros();
+}
 
-    Serial.println("calibrating gyro: ");
+// --- NEW FUNCTION ---
+void calibrateMPU()
+{
+    Serial.println("Calibrating gyro... DO NOT MOVE");
     float sumZ = 0;
+    
+    // Clear any pending interrupts
+    mpuDataReady = false; 
+
     for(int i = 0; i < 200; i++)
     {
-        //wait for flag before reading during calibration with timeout
         unsigned long waitStart = millis();
         while(!mpuDataReady && (millis() - waitStart < 20)) { yield(); }
         mpuDataReady = false;
@@ -57,9 +63,14 @@ void initMPU()
         sumZ += g.gyro.z;
     }
     gyroZ_offset = sumZ / 200.0;
-
-    //switch to micros() for higher precision timing with rapid interrupts
+    
+    // Reset yaw and timer right after calibration finishes
+    currentYaw = 0.0;
     lastMPUTime = micros();
+    mpuDataReady = false;
+    
+    Serial.print("Calibration complete. Offset: ");
+    Serial.println(gyroZ_offset);
 }
 
 void updateMPU()
