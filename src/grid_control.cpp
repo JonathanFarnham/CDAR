@@ -17,7 +17,7 @@ float target_heading = 0.0;
 bool isAutoPilotActive = false;
 
 //State Machine Variables
-enum State { IDLE, DRIVING_LONG, TURNING_1, DRIVING_SHORT, TURNING_2, FINISHED };
+enum State { IDLE, CALIBRATING, DRIVING_LONG, TURNING_1, DRIVING_SHORT, TURNING_2, FINISHED };
 State currentState = IDLE;
 
 int current_pass = 0;
@@ -39,21 +39,7 @@ void startGridRun()
     if (isAutoPilotActive) return; //prevent from running if already running
 
     isAutoPilotActive = true; //lock
-
-    calibrateMPU();
-
-    currentState = DRIVING_LONG;
-    current_pass = 1;
-    current_turn_right = turn_right_first;
-    resetYaw();
-    target_heading = 0.0;
-
-    //setup first move (length)
-    resetTickCount();
-    target_ticks = grid_len_ft * TICKS_PER_FOOT;
-    
-    //Use RPM instead of PWM
-    setTargetRPM(SPEED_GRID_RPM, SPEED_GRID_RPM); 
+    currentState = CALIBRATING;
     
     Serial.println("Grid Started");
 }
@@ -82,6 +68,25 @@ void handleGrid()
             stopGridRun(); 
             currentState = IDLE;
         }
+        return;
+    }
+
+    if (currentState == CALIBRATING)
+    {
+        calibrateMPU();
+
+        //Setup First Drive
+        currentState = DRIVING_LONG;
+        current_pass = 1;
+        current_turn_right = turn_right_first;
+        
+        resetYaw();
+        target_heading = 0.0;
+
+        resetTickCount();
+        target_ticks = grid_len_ft * TICKS_PER_FOOT;
+        
+        setTargetRPM(SPEED_GRID_RPM, SPEED_GRID_RPM); 
         return;
     }
 
