@@ -51,3 +51,10 @@
 //Grid Speed Values
 #define SPEED_GRID_RPM 300
 #define SPEED_TURN_RPM 200
+
+
+//I2C Pins for MPU-6050
+#define I2C_SDA 4
+#define I2C_SCL 5
+#define MPU_INT_PIN 15
+

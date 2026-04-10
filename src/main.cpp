@@ -4,6 +4,7 @@
 #include "web_server.h"
 #include "grid_control.h"
 #include "motor_hardware.h"
+#include "mpu_handler.h"
 
 //Task Handle for Web Server
 TaskHandle_t TaskWeb;
@@ -35,6 +36,7 @@ void setup()
   //Initialize Hardware
   initDriveSystem();
   initWebServer();
+  initMPU();
 
   //Create web server task on Core 0
   xTaskCreatePinnedToCore(
@@ -53,6 +55,7 @@ void setup()
 
 void loop()
 {
+  updateMPU();
   handleGrid();
   updateDriveSystem();
 
