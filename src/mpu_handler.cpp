@@ -22,6 +22,8 @@ void IRAM_ATTR dmpDataReady()
 void initMPU()
 {
     Wire.begin(I2C_SDA, I2C_SCL);
+    Wire.setClock(400000);
+
     if (!mpu.begin())
     {
         Serial.println("Failed to find MPU6050");
@@ -30,6 +32,9 @@ void initMPU()
 
     mpu.setGyroRange(MPU6050_RANGE_500_DEG);
     mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+
+    //Lower sample rate to free up CPU
+    mpu.setSampleRateDivisor(9);
 
     pinMode(MPU_INT_PIN, INPUT);
 
@@ -43,7 +48,6 @@ void initMPU()
     lastMPUTime = micros();
 }
 
-// --- NEW FUNCTION ---
 void calibrateMPU()
 {
     Serial.println("Calibrating gyro... DO NOT MOVE");
