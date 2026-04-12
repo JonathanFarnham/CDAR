@@ -33,7 +33,7 @@
 #define PID_KI 0.3
 #define PID_KD 0.00
 #define CALC_INTERVAL 100 //Calculate velocity every 100ms
-#define WHEEL_TRIM 1.03   //Reduces Speed of Left Motor to account for mechanical difference and tolerance
+#define WHEEL_TRIM 0.95   //Reduces Speed of Left Motor to account for mechanical difference and tolerance
 
 //Kickstart Settings
 #define KICKSTART_MS 50
@@ -50,7 +50,7 @@
 
 //Grid Speed Values
 #define SPEED_GRID_RPM 300
-#define SPEED_TURN_RPM 200
+#define SPEED_TURN_RPM 300
 
 
 //I2C Pins for MPU-6050

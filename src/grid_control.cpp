@@ -115,7 +115,14 @@ void handleGrid()
     if (targetReached)
     {
         stopAll();
-        delay(200);
+
+        //Keep tracking IMU while coasting to stop
+        unsigned long brakeTimer = millis();
+        while (millis() - brakeTimer < 200)
+        {
+            updateMPU();
+            delay(1);
+        }
         resetTickCount();
 
         switch (currentState)
